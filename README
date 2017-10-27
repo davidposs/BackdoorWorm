@@ -1,5 +1,8 @@
 USAGE
 
+Replace top line in SSHConnection.py with attacker's IP
+
+
 Replicator Worm
 $ python replicator.py usernames.txt passwords.txt
 
