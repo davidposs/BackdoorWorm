@@ -1,18 +1,38 @@
-USAGE
+Project 1 - Replicator, Ransom and Backdoor worms
 
-Replace top line in SSHConnection.py with attacker's IP
+Members:
+    David Poss       :  davidposs@csu.fullerton.edu
+    Gerard Cortes    :  gerard.co95@csu.fullerton.edu
+    Billy Dang       :  bdang@csu.fullerton.edu
 
-Every username and password file needs to be named usernames.text and passwords.txt
+Setup:
+    Attacker system  :  davidposs-Lubuntu-1
+    Directory in VM  :  /home/cpsc/Project1
 
-Replicator Worm
-$ python replicator.py usernames.txt passwords.txt
 
-Ransom Worm
-$ python replicator.py local_ransom.py usernames.txt passwords.txt
+Instructions: 
+    Replicator Worm:
+        $ python replicator.py usernames.txt passwords.txt
 
-Backdoor Worm
-$ python recv.py
-(in new tab)
-$ python replicator.py local_backdoor.py usernames.txt passwords.txt
+    Ransom Worm
+        $ python replicator.py local_ransom.py usernames.txt passwords.txt
 
-Note: runing recv.py isn't necessary for the backdoor to work, it is just a listener
+    Backdoor Worm
+        Optional first step: creates a listener for victims sending their
+           IPs to the attacker. Run the second command in a new tab.
+        (optional)  $ python recv.py
+        $ python replicator.py local_backdoor.py usernames.txt passwords.txt
+
+Notes:
+       In SSHConnection.py, the first line should have the ATTACKER'S
+       IP address hardcoded in. This is needed for the backdoor worm to
+       work. The thought was that we needed to forward the attacker's IP
+       through the network to each system, and this was the simplest way
+       without sending another file through.
+       Throughout testing, the attacker system's IP has been 192.168.1.4
+
+       Unfortunately username and password files must be named usernames.txt
+       and passwords.txt respectively
+
+       All necessary files are provided. 
+       All files must be in the same directory.
