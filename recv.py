@@ -12,16 +12,18 @@ def main():
     file_name = "badsystems.txt"
     logfile = open(file_name, "w")
     data = []
+    print "Listening, printing data to badsystems.txt"
     while True:
-        print "Listening, printing data to badsystems.txt"
         try:
             nc = nclib.Netcat(listen=(local_ip, port), log_send=False, log_recv=logfile)
             data.append(nc.recv())
             time.sleep(5)
             nc.close()
             print "recevied " + data[-1]
-        except KeyboardInterrupt:
-            print "lol"
+        except KeyboardInterrupt as quit:
+            print "... stopped"
+            logfile.close()
+            return
 
     logfile.close()
 
